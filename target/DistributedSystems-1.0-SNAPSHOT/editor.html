@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily data input</title>
+    <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js" integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        label{
+            margin-top: 30px !important;
+        }
+        .form-control{
+            border:none;
+        }
+        .btn{
+            margin-top:50px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function() {
+            $( "#datepicker_S" ).datepicker();
+            $( "#datepicker_F" ).datepicker();
+        } );
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Diabetes Monitoring Platform</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/DistributedSystems_war/index.html">Insert Data</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/DistributedSystems_war/stats.html">View Statistics/Data</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/DistributedSystems_war/manager.html">Manage Data</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <h3>Editor</h3>
+        <label for="glucose">Daily blood glucose level (measured in mg/dL): </label>
+        <input type="text" id="glucose" placeholder="Daily blood glucose level"/>
+        <br>
+        <label for="carbs" class="mt-10"> Daily carb intake (measured in grams): </label>
+        <input type="text" id="carbs" placeholder="Daily carb intake"/>
+        <br>
+        <label for="medication" class="mt-10">Daily medication dose: </label>
+        <input type="text" id="medication" placeholder="Daily medication dose"/>
+        <br>
+        <button class="btn btn-dark" id="submit-data">Edit Data</button>
+        <div id="result"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var eid;
+    $(document).ready(function(){
+        const urlParams = new URLSearchParams(window.location.search);
+        eid = urlParams.get('eid');
+        $("#glucose").val(urlParams.get('gluc'));
+        $("#carbs").val(urlParams.get('carb'));
+        $("#medication").val(urlParams.get('meds'));
+    })
+    $("#submit-data").click(function () {
+        var gluc = $("#glucose").val();
+        var carbs = $("#carbs").val();
+        var meds = $("#medication").val();
+        var sendData = {
+            recId: eid,
+            gluc:gluc,
+            carbs:carbs,
+            meds:meds
+        }
+        $.ajax({
+            type: "PUT",
+            url: "http://localhost:8080/DistributedSystems_war/api/Diabetes/Update",
+            data: sendData,
+            complete: function(result){
+               $('#result').html(result.responseText);
+            }
+        });
+    });
+</script>
+</body>
+</html>
